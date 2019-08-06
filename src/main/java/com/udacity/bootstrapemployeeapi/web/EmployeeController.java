@@ -2,11 +2,7 @@ package com.udacity.bootstrapemployeeapi.web;
 
 import com.udacity.bootstrapemployeeapi.model.Employee;
 import com.udacity.bootstrapemployeeapi.service.EmployeeService;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +27,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employee/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
         return new ResponseEntity<Employee>(employeeService.findEmployeeById(id), HttpStatus.OK);
     }
 
@@ -41,24 +37,24 @@ public class EmployeeController {
     }
 
     @PutMapping("/employee/{id}")
-    public void updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+    public void updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
         employeeService.updateEmployee(id, employee);
     }
 
     @DeleteMapping("/employee/{id}")
-    public void deleteEmployee(@PathVariable Long id) {
+    public void deleteEmployee(@PathVariable int id) {
         employeeService.deleteEmployee(id);
     }
 
     @GetMapping("/employee/find")
     public List<Employee> findEmployee(@RequestParam(required=false) String name,
                                        @RequestParam(required=false) String surname,
-                                       @RequestParam(required=false) String address,
-                                       @RequestParam(required=false) String job) {
+                                       @RequestParam(required=false) String grade,
+                                       @RequestParam(required=false) String salary) {
         Specification<Employee> employeeSpecification = Specification.where(new EmployeeWithName(name))
                 .and(new EmployeeWithSurname(surname))
-                .and(new EmployeeWithAddress(address))
-                .and(new EmployeeWithJob(job));
+                .and(new EmployeeWithGrade(grade))
+                .and(new EmployeeWithSalary(salary));
         return employeeService.findEmployee(employeeSpecification);
     }
 
@@ -96,37 +92,37 @@ public class EmployeeController {
         }
     }
 
-    class EmployeeWithAddress implements Specification<Employee> {
+    class EmployeeWithGrade implements Specification<Employee> {
 
-        private String address;
+        private String grade;
 
-        public EmployeeWithAddress(String address) {
-            this.address = address;
+        public EmployeeWithGrade(String grade) {
+            this.grade = grade;
         }
 
         @Override
         public Predicate toPredicate(Root<Employee> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-            if (address == null) {
+            if (grade == null) {
                 return criteriaBuilder.isTrue(criteriaBuilder.literal(true)); // always true = no filtering
             }
-            return criteriaBuilder.equal(root.get("address"), this.address);
+            return criteriaBuilder.equal(root.get("grade"), this.grade);
         }
     }
 
-    class EmployeeWithJob implements Specification<Employee> {
+    class EmployeeWithSalary implements Specification<Employee> {
 
-        private String job;
+        private String salary;
 
-        public EmployeeWithJob(String job) {
-            this.job = job;
+        public EmployeeWithSalary(String salary) {
+            this.salary = salary;
         }
 
         @Override
         public Predicate toPredicate(Root<Employee> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-            if (job == null) {
+            if (salary == null) {
                 return criteriaBuilder.isTrue(criteriaBuilder.literal(true)); // always true = no filtering
             }
-            return criteriaBuilder.equal(root.get("job"), this.job);
+            return criteriaBuilder.equal(root.get("salary"), this.salary);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.udacity.bootstrapemployeeapi.service;
 
-import com.udacity.bootstrapemployeeapi.dao.EmployeeRepository;
+import com.udacity.bootstrapemployeeapi.repository.EmployeeRepository;
 import com.udacity.bootstrapemployeeapi.model.Employee;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee findEmployeeById(Long id) {
+    public Employee findEmployeeById(int id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Employee employee = optionalEmployee.orElseThrow(EmployeeNotFoundException::new);
         return employee;
@@ -34,18 +34,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void updateEmployee(Long id, Employee employee) {
+    public void updateEmployee(int id, Employee employee) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Employee existingEmployee = optionalEmployee.orElseThrow(EmployeeNotFoundException::new);
         existingEmployee.setName(employee.getName());
         existingEmployee.setSurname(employee.getSurname());
-        existingEmployee.setAddress(employee.getAddress());
-        existingEmployee.setJob(employee.getJob());
+        existingEmployee.setGrade(employee.getGrade());
+        existingEmployee.setSalary(employee.getSalary());
         employeeRepository.save(existingEmployee);
     }
 
     @Override
-    public void deleteEmployee(Long id) {
+    public void deleteEmployee(int id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         Employee employee = optionalEmployee.orElseThrow(EmployeeNotFoundException::new);
         employeeRepository.delete(employee);
